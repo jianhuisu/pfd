@@ -23,6 +23,7 @@ if(socket_listen($socket,4)==false){
 
 //让服务器无限获取客户端传过来的信息
 do{
+
     /*接收客户端传过来的信息*/
     /*socket_accept的作用就是接受socket_bind()所绑定的主机发过来的套接流*/
     $accept_resource = socket_accept($socket);
@@ -33,7 +34,7 @@ do{
         $string = socket_read($accept_resource,1024);
         /*socket_read的作用就是读出socket_accept()的资源并把它转化为字符串*/
 
-        //echo 'server receive is :'.$string.PHP_EOL;//PHP_EOL为php的换行预定义常量
+
         if($string != false){
 
             echo "one connect from client\r\n";
@@ -41,9 +42,7 @@ do{
             getResponseHeader($string,$accept_resource,$host,$port);
             /*向socket_accept的套接流写入信息，也就是回馈信息给socket_bind()所绑定的主机客户端*/
 
-            //socket_write($accept_resource,$return_client,strlen($return_client));
             /*socket_write的作用是向socket_create的套接流写入信息，或者向socket_accept的套接流写入信息*/
-
             // 如果接收到客户端发送的信息
             while(socket_recv($accept_resource, $buf, 1024, 0) >= 1)
             {
