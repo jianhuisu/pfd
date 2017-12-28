@@ -10,7 +10,23 @@ $port = '19910';
 //创建服务端的socket套接流,net协议为IPv4，protocol协议为TCP
 $socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
 
-/*绑定接收的套接流主机和端口,与客户端相对应*/
+/*
+
+    socket服务在服务端运行类似于mysql中数据的关系
+
+    socket 抽象层处于应用进程  与 传输层之间 ,是应用 与 TCP 协议的 接口
+
+    socket_bind 绑定接收的套接流主机和端口,与客户端相对应
+    socket_listen
+
+    这里的意思应该是  刚刚创建的socket服务
+    将此 php 进程服务 （假设PID 为 5388） 与 severHost(192.168.32.10)、port(19910) 绑定
+    当 severHost端socket 的 监听到 port (19910) 有请求时,转交由 php进程 5388 处理
+
+    客户端不需要知道服务端(php)脚本(socket/websocket.php)处理业务逻辑,
+    只需要知道 severHost 的 IP 地址 + 通讯端口，就可以建立连接
+
+*/
 if(socket_bind($socket,$host,$port) == false){
     echo 'server bind fail:'.socket_strerror(socket_last_error());
     /*这里的127.0.0.1是在本地主机测试，你如果有多台电脑，可以写IP地址*/
@@ -30,6 +46,8 @@ do{
 
     if($accept_resource !== false){
 
+        socket_select($changed, $null, $null, 0, 10);
+
         /*读取客户端传过来的资源，并转化为字符串*/
         $string = socket_read($accept_resource,1024);
         /*socket_read的作用就是读出socket_accept()的资源并把它转化为字符串*/
@@ -43,7 +61,7 @@ do{
             /*向socket_accept的套接流写入信息，也就是回馈信息给socket_bind()所绑定的主机客户端*/
 
             /*socket_write的作用是向socket_create的套接流写入信息，或者向socket_accept的套接流写入信息*/
-            // 如果接收到客户端发送的信息
+            // socket_recv 阻塞其它请求
             while(socket_recv($accept_resource, $buf, 1024, 0) >= 1)
             {
                 if(empty($j)){

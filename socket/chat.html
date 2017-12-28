@@ -1,0 +1,169 @@
+
+<html>
+<head>
+    <title>chatdemo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/socket/chat.css">
+    <style>
+        #sendBtn:hover{
+            background:rgb(32, 181, 115)
+        }
+    </style>
+</head>
+
+<body class="singlePage">
+<div class="mainBox js-mainBox"
+     style="display: block; height: 430px; width: 360px; bottom: 100px; right: 20px; margin-top: 0px; margin-left: 0px;">
+    <div id="zcChat" class="zcChat" style="border:0">
+
+        <div class="header h60 js-header" style="background: rgb(32, 181, 115);">
+            <div class="toolBar headBtn">
+                <a hidefocus="" href="javascript: void(0);" class="closeForm js-closeForm" title="关闭"></a>
+            </div>
+
+            <div class="infoBar">
+                <img
+                        src="/socket/teacher.jpg"
+                        class="infoBarLogo js-infoBarLogo" alt="" id="infoBarLogo">
+
+                <div class="infoBarText ml50 white ie-title" style="float:left;margin-left:10px">
+                    <p class="h20">
+                        <span class="infoBarName" id="infoBarName">
+                            <span class="titleName js-titleName" title="小智机器人">JD</span>
+                            <span class="inputIng js-inputIng" id="js-inputIng"></span>
+                        </span>
+                    </p>
+                    <p class="infoBarCompany js-infoBarCompany" id="infoBarCompany" title="edusoho">edusoho</p>
+                </div>
+            </div>
+
+            <a href="javascript:void(0)" class="js-unread unread" style="display: none;"></a>
+        </div>
+
+        <div class="chatMain">
+            <div class="chatPanelBody js-chatPanelBody">
+                <div id="chatPanel" class="chatPanel js-chatPanel" style="height: 373px;">
+                    <p class="historyTrigger js-historyTrigger">
+                        <span class="js-pulldown-text" style="cursor: pointer">点击加载历史记录</span>
+                        <span class="js-pulldown-loading pulldown-loading"></span>
+                    </p>
+                    <ul id="chatPanelList" class="chatPanelList js-chatPanelList">
+                        <li class="clearfix sysData"><p class="msgData">今天11:37</p></li>
+
+                        <li class="clearfix magBox leftMsg" creattime="1514432275199">
+                            <p class="leftName">JD</p>
+                            <div class="msgDiv">
+                                <div class="msgText">
+                                    <p>111<br></p>
+                                </div>
+                            </div>
+                            <div class="msgBottomArea"></div>
+                        </li>
+
+                        <li class="clearfix magBox rightMsg">
+                            <div class="msgDiv">
+                                <div class="msgText">的 </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div id="footer" class="footer js-footer">
+                    <div class="footer-on js-footerOn">
+                        <div class="text-layout">
+
+                            <div class="textArea">
+                                <pre class="textareaPre js-textareaPre"></pre>
+                                <input id="js-inputMsg" placeholder="" class="text grey js-inputMsg" />
+                            </div>
+                            <div id="faceGroupTarea" class="js-group" style="display:none">
+                                <div id="faceGroup" class="js-faceGroup groupChildren js-groupChildren"></div>
+                            </div>
+                            <span class="btn send-btn js-send-btn js-text-send" id="sendBtn">发送</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rightBar js-rightBar">
+                <span class="menuBtn menuLeftBtn noAbleLeftBtn js-prev js-menuBtn"></span>
+                <div class="barMenuWidely js-barMenuWidely">
+                    <ul class="barMenu js-barMenu"></ul>
+                </div>
+                <span class="menuBtn menuRightBtn js-next js-menuBtn hoverBtn"></span>
+                <div class="barMain js-barMain"></div>
+            </div>
+
+        </div>
+        <div id="popup-captcha-pc" class="js-popup-captcha-pc popup-captcha-pc"></div>
+
+    </div>
+</div>
+
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(function(){
+
+        // serverHost IP + port 即可建立通讯
+        var wsurl = 'ws://192.168.32.10:19910';
+        var websocket;
+        var i = 0;
+        var username = 'sujianhui';
+        var msg = {username:username,message:''};
+
+        if(window.WebSocket){
+            websocket = new WebSocket(wsurl);
+
+            //连接建立
+            websocket.onopen = function(event){
+                console.log("Connected to WebSocket server.");
+            };
+
+            //收到消息
+            websocket.onmessage = function(event) {
+
+                //解析收到的json消息数据
+                var msg = JSON.parse(event.data);
+                console.log('receive message from server: '+msg);
+            };
+
+            //发生错误
+            websocket.onerror = function(event){
+                console.log("Connected to WebSocket server error");
+            };
+
+            //连接关闭
+            websocket.onclose = function(event){
+                console.log('websocket Connection Closed. ');
+            };
+
+            function send(){
+
+                try{
+                    websocket.send(JSON.stringify(msg));
+                    clearMsg();
+                } catch(ex) {
+                    console.warn(ex);
+                }
+
+            }
+
+            function clearMsg(){
+                msg.message = '';
+                $('#js-inputMsg').val('');
+            }
+
+            $("#sendBtn").bind('click',function(){
+                msg.message = $('#js-inputMsg').val();
+                send();
+            })
+
+        } else {
+            alert('该浏览器不支持web socket');
+        }
+
+    });
+</script>
+</body>
+</html>
