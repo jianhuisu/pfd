@@ -37,32 +37,33 @@ if(socket_listen($socket,4)==false){
     echo 'server listen fail:'.socket_strerror(socket_last_error());
 }
 
+//连接的client socket 列表
+$clients = array($socket);
+
 //让服务器无限获取客户端传过来的信息
 do{
 
     /*接收客户端传过来的信息*/
     /*socket_accept的作用就是接受socket_bind()所绑定的主机发过来的套接流*/
-    $accept_resource = socket_accept($socket);
 
-    if($accept_resource !== false){
-
+        $changed = $clients;
         socket_select($changed, $null, $null, 0, 10);
 
-        /*读取客户端传过来的资源，并转化为字符串*/
-        $string = socket_read($accept_resource,1024);
-        /*socket_read的作用就是读出socket_accept()的资源并把它转化为字符串*/
+        // 判断是否有新链接
+        if(in_array($socket,$changed)){
 
-
-        if($string != false){
+            /*读取客户端传过来的资源，并转化为字符串*/
+            $string = socket_read($socket,1024);
+            /*socket_read的作用就是读出socket_accept()的资源并把它转化为字符串*/
 
             echo "one connect from client\r\n";
 
-            getResponseHeader($string,$accept_resource,$host,$port);
+            getResponseHeader($string,$socket,$host,$port);
             /*向socket_accept的套接流写入信息，也就是回馈信息给socket_bind()所绑定的主机客户端*/
 
             /*socket_write的作用是向socket_create的套接流写入信息，或者向socket_accept的套接流写入信息*/
             // socket_recv 阻塞其它请求
-            while(socket_recv($accept_resource, $buf, 1024, 0) >= 1)
+            while(socket_recv($socket, $buf, 1024, 0) >= 1)
             {
                 if(empty($j)){
                     $j = 1;
@@ -72,18 +73,16 @@ do{
                 echo $receiveMessage."\r\n";
 
                 $sendMessage = mask($receiveMessage);
-                $sent = socket_write($accept_resource, $sendMessage, strlen($sendMessage));
+                $sent = socket_write($socket, $sendMessage, strlen($sendMessage));
                 echo '__j__'.$j++."\r\n";
             }
 
+            $found_socket = array_search($socket, $changed);
+            unset($changed[$found_socket]);
 
-        }else{
-            echo 'socket_read is fail';
+            /*socket_close的作用是关闭socket_create()或者socket_accept()所建立的套接流*/
+            //socket_close($accept_resource);
         }
-
-        /*socket_close的作用是关闭socket_create()或者socket_accept()所建立的套接流*/
-        //socket_close($accept_resource);
-    }
 
 }while(true);
 
