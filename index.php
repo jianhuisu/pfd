@@ -8,3 +8,4 @@ register_shutdown_function(['\vendor\Shutdown','shutdownFunc']);
 
 (new \vendor\Application())->run();
 
+
