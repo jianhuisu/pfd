@@ -1,6 +1,8 @@
 <?php
 namespace vendor;
 
+spl_autoload_register(['\vendor\Loader','autoload']);
+
 class Loader
 {
     public static function autoload($className)

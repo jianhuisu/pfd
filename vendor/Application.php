@@ -6,7 +6,6 @@
  */
 namespace vendor;
 
-use app\controller\BaseController;
 use vendor\base\Event;
 use vendor\ActionEvent;
 
@@ -17,9 +16,14 @@ class Application
 
     public function __construct()
     {
-
+        $this->init();
     }
 
+    private function init()
+    {
+        set_error_handler('\vendor\ErrorHandle::hand',E_ALL | E_STRICT );
+        register_shutdown_function(['\vendor\Shutdown','shutdownFunc']);
+    }
 
     public function run()
     {
