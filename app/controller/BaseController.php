@@ -7,25 +7,11 @@
 namespace app\controller;
 
 use vendor\ActionEvent;
+use vendor\Application;
 use vendor\base\Event;
 
-class BaseController
+class BaseController extends Application
 {
-    public function __construct()
-    {
-        Event::on(ActionEvent::EVENT_BEFORE_ACTION,[$this,ActionEvent::EVENT_BEFORE_ACTION]);
-        Event::on(ActionEvent::EVENT_AFTER_ACTION,[$this,ActionEvent::EVENT_AFTER_ACTION]);
-    }
-
-    public function beforeAction()
-    {
-
-    }
-
-    public function afterAction()
-    {
-
-    }
 
     protected function render($view,$params)
     {
@@ -52,7 +38,6 @@ class BaseController
         } else {
             trigger_error("view file {$file} is not exists",E_USER_ERROR);
         }
-
 
     }
 

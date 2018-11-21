@@ -7,16 +7,28 @@
 namespace vendor;
 
 use vendor\base\Event;
-use vendor\ActionEvent;
 
-class Application
+class Application extends \vendor\base\Application
 {
+
+    const EVENT_BEFORE_ACTION = 'beforeAction';
+    const EVENT_AFTER_ACTION = 'afterAction';
 
     public $controllerNamespace = 'app\controller';
 
     public function __construct()
     {
         $this->init();
+    }
+
+    public function beforeAction($event)
+    {
+
+    }
+
+    public function afterAction($event)
+    {
+
     }
 
     private function init()
@@ -40,12 +52,15 @@ class Application
             $action       = 'action'.ucfirst($action);
         }
 
+        $this->on(self::EVENT_BEFORE_ACTION,[$this,'beforeAction']);
+        $this->on(self::EVENT_AFTER_ACTION,[$this,'afterAction']);
+
         $controllerID = $this->controllerNamespace.'\\'.$controllerID;
         $controllerObj = new $controllerID();
 
-        Event::trigger(ActionEvent::EVENT_BEFORE_ACTION);
+        $this->trigger(self::EVENT_BEFORE_ACTION);
         call_user_func_array([$controllerObj,$action],[]);
-        Event::trigger(ActionEvent::EVENT_AFTER_ACTION);
+        $this->trigger(self::EVENT_AFTER_ACTION);
 
     }
 
