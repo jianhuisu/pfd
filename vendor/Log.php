@@ -18,6 +18,10 @@ class Log
         $formatMsg   = date('Y-m-d H:i:s') . ' ' .$msg . "\n";
         // error_log(date('Y-m-d H:i:s') . ' ' .$msg . "\n", 3, $destination );
 
+        if(!file_exists($runtime)){
+            mkdir($runtime,0777);
+        }
+
         if(!file_exists($destination)){
             touch($destination);
         }
