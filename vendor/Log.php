@@ -12,7 +12,7 @@ class Log
 
     public static function set($msg)
     {
-        $runtime = WEB_ROOT.'/runtime/logs/';
+        $runtime = WEB_ROOT.'/app/runtime/logs/';
         $file = date('Ymd',time()).'.log';
         $destination = $runtime.$file;
         $formatMsg   = date('Y-m-d H:i:s') . ' ' .$msg . "\n";
