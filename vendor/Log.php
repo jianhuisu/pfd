@@ -15,8 +15,16 @@ class Log
         $runtime = WEB_ROOT.'/runtime/logs/';
         $file = date('Ymd',time()).'.log';
         $destination = $runtime.$file;
-        echo $msg."\n";
-        error_log(date('Y-m-d H:i:s') . ' ' .$msg . "\n", 3, $destination );
+        $formatMsg   = date('Y-m-d H:i:s') . ' ' .$msg . "\n";
+        // error_log(date('Y-m-d H:i:s') . ' ' .$msg . "\n", 3, $destination );
+
+        if(!file_exists($destination)){
+            touch($destination);
+        }
+
+        $fd = fopen($destination,'a+');
+        fwrite($fd,$formatMsg);
+        fclose($fd);
 
     }
 
