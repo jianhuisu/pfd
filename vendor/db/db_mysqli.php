@@ -29,7 +29,7 @@ class db_mysqli
 
     public function connect()
     {
-        $conn = mysqli_connect("127.0.0.1","root","MyName@2991","qq");
+        $conn = mysqli_connect("127.0.0.1","root","123456","im");
 
         if (!$conn) {
         	echo "连接失败！";

@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sujianhui
- * Date: 2019-05-29
- * Time: 13:21
- */
-$timeList = range(strtotime('2019-05-01'), strtotime('-1 days',strtotime('2019-05-04')), 3600 * 24);
 
-$columns = array_map(function ($t){
-    $date = date('Y-m-d',$t);
-    return ['st' => $date, 'ed' => $date,'title' => $date];
-},$timeList);
+$conn = mysqli_connect("127.0.0.1","root","123456","im");
 
-var_dump($columns);exit;
+if (!$conn) {
+    echo "连接失败！";
+    echo mysqli_connect_error();
+    exit();
+}
 
-
-
-
-
+echo "success\n";
