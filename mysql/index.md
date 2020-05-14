@@ -23,6 +23,15 @@
 8）对于定义为text、image和bit的数据类型的列不要建立索引。
 9）NULL值：应该指定列为NOT NULL，除非你想存储NULL。在mysql中，含有空值的列很难进行查询优化，因为它们使得索引、索引的统计信息以及比较运算更加复杂。你应该用0、一个特殊的值或者一个空串代替空值；
 
+一个实际的例子
+
+MySQL有一个复合索引：INDEX(`a`, `b`, `c`)，以下查询能用上索引的有？
+
+ - A、select * from users where a = 1 and b = 2    可以使用 a,b
+ - B、select * from users where b = 2 and a = 1    可以使用a,b 优化器
+ - C、select * from users where a = 2 and c = 1    可以使用a, c 因为中间隔了一个b,不能生效
+ - D、select * from users where b = 2 and c = 1    不能使用索引
+
 
 #### 索引分类
 
