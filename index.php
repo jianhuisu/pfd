@@ -1,5 +1,6 @@
 <?php
-
+phpinfo();
+exit;
 for($i=0;$i<100;$i++){
 
     $conn = mysqli_connect("127.0.0.1","sujianhui","xdebug_XDEBUG_5566","im");
