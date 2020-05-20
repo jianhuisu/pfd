@@ -73,9 +73,7 @@ worker 进程一次请求的处理被划分为 5 个阶段：
  
 worker 处理到各个阶段时将会把当前阶段更新到`fpm_scoreboard_proc_s->request_stage`，master进程正是通过这个标识判断`worker`进程是否空闲的。  
        
-
 ##### master : 管理worker进程, 信号处理
-
 
 PHP-FPM 的进程管理方式和Nginx的进程管理方式有些类似。在处理请求时，并非由主进程接受请求后转给子进程，而是子进程「抢占式」地接受用户请求。
 本质上`PHP-FPM`多进程以及`Nginx`多进程，都是在主进程监听同一个端口后，fork子进程达到多个进程监听同一端口的目的。
@@ -84,12 +82,10 @@ php-fpm在`pm=static` `pm=dynamic`两种运行模式下,master进程是不会监
 这是因为在启动阶段,这两种模式下,都会提前fork出worker进程,然后master进程只负责监控worker进程的运行状态即可.但是在`pm=ondemand`模式下,master需要监听是否有新请求到达,
 如果有新请求到达,master需要`fork worker`.一般`ondemand`较少使用,所以下面主要介绍`pm=static`,`pm=dynamic`两种模式.
 
-
 `php-fpm`启动进程A会调用`MINIT`方法，然后`fork`出一个`fpm-master`进程B，进程B启动多个`php-cgi`子进程C，启动工作完成后，启动进程A就退出了.其它进程常驻内存.
 master 启动了一个定时器，每隔 1s 触发一次，主要用于 dynamic、ondemand 模式下的 worker 管理，
 master 会定时检查各 worker pool 的 worker 进程数，通过此定时器实现 worker 数量的控制.
-还有一点需要注意,woker抢占式的进行服务.
-
+还有一点需要注意,`woker`抢占式的进行服务.
 
 fpm_run()中`master`进程将进入fpm_event_loop()分支执行
 
@@ -108,3 +104,14 @@ Linux内核的SO_REUSEPORT选项可以实现多个进程监听同一个端口.
 但仅有一个worker进程accept成功,其它worker进程被唤起后没抢到“连接”而再次进入休眠,唤起多余的进程将影响服务器的性能.从而导致`惊群现象`的产生.
 
 
+#### FAQ 
+
+Q1 : 
+nginx的master-worker多进程模型，请求是会被当作一个事件放入到队列中，worker进程会消耗这个队列处理请求，这样并发量就会更高，不会一个worker进程只处理一个请求。
+php-fpm也是采用的master-worker，从课程中看出，php-fpm似乎是一个进程同时只能处理一个请求。不知道理解上面存在错误吗？
+
+ANSWER:
+同学您好,你提到的nginx的worker同时处理多个请求，是指的I/O多路复用吧？ 比如在支持`epoll`的操作系统下，`nginx`用了epoll来同时处理多个请求。是指的这个意思吧？
+那么对于`php-fpm`同样也用了I/O多路复用，一个`worker`的`fpm`也可以同时处理多个请求，在支持`poll`的操作系统下使用的是`poll`，可以`gdb -p worker_pid`，在poll处打一个断点，如下：
+//img.mukewang.com/szimg/5c7b50140001d8e125040274.jpg
+同样也是可以同时处理多个请求的。 **课程里面提到的意思是多个worker会通过抢锁获取一个请求进行处理**。

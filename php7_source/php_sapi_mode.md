@@ -15,10 +15,9 @@
     
  - `kill -USR1 "php-fpm master pid"` 重新打开日志文件. 执行完毕后 你会发现`php-fpm master/worker`进程`id` **not change**  
  - `kill -USR2 "php-fpm master pid"`  平滑重载所有`php-fpm`进程,执行完毕后你会发现`php-fpm master/worker`进程`id` **have changed**.
- - `kill -9 php-fpm-master.pid` , only master process was killed , worker still alive and continue listening port,
-    we still can send request through browser and get response normally.
+ - `kill -KILL/-9 php-fpm-master.pid` , 强制杀死master进程,该信号不允许中断/阻塞,此时master进程无法通知回收worker进程,所以此时`worker`进程仍然监听port,仍然可以正常处理http请求.
  - `kill -INT/-QUIT/-TERM  master pid` ,  `stop php-fpm service` **信号被当前进程树接收到**.也就是说，不仅当前进程会收到信号，它的子进程也会收到.
- - `kill master pid` 发送SIGTERM 信号到进程 信号可能会被阻塞	
+ - `kill master pid` 发送`SIGTERM`信号到进程 信号可能会被阻塞,`master`可以回收worker进程.	
 	 
 example.
 
