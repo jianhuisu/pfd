@@ -1,14 +1,30 @@
 <?php
 
+    $i = 1;
+    $j = &$i;
+    $j = 2;
+
+    echo "i value : $i ; j value : $j \n"; // 2 , 2
+
     $a=[1,2,3];
     foreach($a as &$v){
-
+        var_dump($v);
     }
 
+    // $v = &$a[0]
+    // $v = &$a[1]
+    // $v = &$a[2]
+
+    echo "------\n";
     foreach($a as $v){
-
+        var_dump($v);
     }
-    echo json_encode($a);
+
+    // $a[2] = $a[0]  : $a = [1,2,1]
+    // $a[2] = $a[1]  : $a = [1,2,2]
+    // $a[2] = $a[2]  : $a = [1,2,2]
+
+    print_r($a);
 
 // 输出结果是 1 2 2
 // 在 PHP 中，foreach 结束后，循环中的索引值（index）及內容（value）並不会被重置。

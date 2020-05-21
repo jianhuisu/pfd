@@ -12,8 +12,6 @@ nginx load balance algho
 neicun fen pei jizhi
 卡特兰数
 
-PHP总共三个模块：内核、zend引擎、以及扩展层
-
 Zend引擎可以将源文件转换成二进制文件运行  => Zend引擎将源文件转换成opcode代码，然后在虚拟机上运行
 
 解析域名->通过dns拿到IP->建立TCP连接->向服务器拿到请求->返回信息
