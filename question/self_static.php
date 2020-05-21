@@ -1,5 +1,6 @@
 <?php
 
+
 class ParentClass
 {
     const MODULE_ID = 0;
@@ -25,3 +26,6 @@ $obj = new ChildClass();
 
 echo $obj->getModuleId_byStatic()."\n";
 echo $obj->getModuleId_bySelf()."\n";
+
+//  self : bind when define
+//  static : bind when call

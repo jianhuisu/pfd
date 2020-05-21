@@ -1,10 +1,17 @@
 <?php
 
     $i = 1;
-    $j = &$i;
+    $j = &$i;  // $i variable change , from long to IS_REFERENCE
     $j = 2;
 
     echo "i value : $i ; j value : $j \n"; // 2 , 2
+
+    unset($j);
+    echo "i value : $i ; j value : $j \n"; // 2 , NULL
+
+
+   // unset($i);
+   // echo "i value : $i ; j value : $j \n"; // NULL , 2
 
     $a=[1,2,3];
     foreach($a as &$v){
@@ -39,3 +46,4 @@
 //prev():将数组的内部指针倒回一位。
 //end():将数组的内部指针指向最后一个元素。
 //reset():将目前指针无条件移至第一个索引位置。
+// C 库函数 void rewind(FILE *stream) 设置文件位置为给定流 stream 的文件的开头。
