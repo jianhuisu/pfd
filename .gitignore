@@ -1,6 +1,5 @@
 # ignore all files in directory .idea
 .idea/
-
 # ignore all files in this project which name is all.txt
 all.txt
 
@@ -8,3 +7,4 @@ all.txt
 !.gitkeep*
 !.gitignore
 #sujianhui.md
+/documents/sjh.md
