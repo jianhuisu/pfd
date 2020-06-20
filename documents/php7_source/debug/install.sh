@@ -17,3 +17,11 @@ cd libzip-1.3.2
 ./configure
 make && make install
 cd ~
+
+sudo cp php-fpm.conf.default php-fpm.conf
+cd php-fpm.d/
+sudo cp www.conf.default www.conf
+cat www.conf.default | egrep -v ';|^$' >> www.conf
+cd sbin/
+sudo ./php-fpm
+

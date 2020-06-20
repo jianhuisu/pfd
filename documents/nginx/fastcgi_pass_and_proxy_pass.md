@@ -1,6 +1,6 @@
 ## fastcgi_pass_and_proxy_pass
 
-waste two hours ...
+浪费了两个小时 ...
 
     server {
     
@@ -22,5 +22,5 @@ waste two hours ...
     
     }
 
- - 网关代理fastcgi_pass
- - 反向代理proxy_pass
+ - 网关代理`fastcgi_pass`
+ - 反向代理`proxy_pass`
