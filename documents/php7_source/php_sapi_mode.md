@@ -1,5 +1,26 @@
 ## PHP SPAI MODE
 
+在PHP生命周期的各个阶段，一些与服务相关的操作都是通过SAPI接口实现。 
+各个服务器抽象层之间遵守着相同的约定，这里我们称之为SAPI接口。
+在PHP的源码中，当需要调用服务器相关信息时，全部通过SAPI接口中对应的方法调用实现
+
+    php-fpm + nginx
+    php + terminal
+    ... 
+    
+#### PHP常见的四种运行模式
+
+`SAPI（Server Application Programming Interface）`服务器应用程序编程接口，即PHP与其他应用交互的接口.
+每个`SAPI`实现都是一个`_sapi_module_struct`结构体变量。
+PHP脚本要执行有很多方式，通过Web服务器，或者直接在命令行下，也可以嵌入在其他程序中。
+`SAPI`提供了一个和外部通信的接口，常见的`SAPI`有：`cgi`、`fast-cgi`、`cli`、`isapi` apache模块的DLL
+ 
+ 1. `ISAPI`模式 (eg Apache : apache2handler mode ) 以web服务器的一个模块加载运行,其实就是将PHP的源码与webServer的代码一起编译，运行时是同一个进程,共享同一个地址空间. 例如 LAMP中,PHP就是作为Apache的一个模块运行的.Apache是多线程调用php模块的.(same as IIS)
+ 1. `CGI`模式  `fork-and-execute` webServer将动态请求转发到CGI程序(以php为例子),就相当于fork一个子进程,然后`exec(php process)`,用CGI程序来解释请求内容,最后将子进程的`output`返回.此时webServer与php进程的地址空间是独立的.此时的php是作为一个独立的程序运行.
+ 1. `FastCGI`模式 这种形式是CGI的加强版本，CGI是单进程，多线程的运行方式，程序执行完成之后就会销毁，所以每次都需要加载配置和环境变量（创建-执行）。
+   而FastCGI则不同，FastCGI 是一个常驻 (long-live) 型的 CGI，它可以一直执行着，只要激活后，不会每次都要花费时间去 fork 一次。
+ 1. `CLI` command line interface
+
 #### CLI 
 
 	php_module_startup
@@ -50,28 +71,4 @@ example.
     [sujianhui@dev529 ~]$>ps aux | grep php-fpm
     sujianh+ 17229  0.0  0.0 112816   976 pts/3    S+   17:03   0:00 grep --color=auto php-fpm
    
-##### php-fpm 的三种运行模式	
-
-	循环
-	pm=dynamic
-	pm=static  静态，始终保持一个固定数量的子进程，这个数由（pm.max_children）定义
-	pm = ondemand
-
-php-fpm三种对子进程的管理方式
-pm = static
-
-静态，始终保持一个固定数量的子进程，这个数由（pm.max_children）定义，这种方式很不灵活，也通常不是默认的。
-
-pm = dynamic
-
-动态，在更老一些的版本中，dynamic被称作apache-like。子进程的数量在下面配置的基础上动态设置：pm.max_children，pm.start_servers，pm.min_spare_servers，pm.max_spare_servers。
-
-启动时，会产生固定数量的子进程（由pm.start_servers控制）可以理解成最小子进程数，而最大子进程数则由pm.max_children去控制，OK，这样的话，子进程数会在最大和最小数范围中变化，还没有完，闲置的子进程数还可以由另2个配置控制，分别是pm.min_spare_servers和pm.max_spare_servers，也就是闲置的子进程也可以有最小和最大的数目，而如果闲置的子进程超出了pm.max_spare_servers，则会被杀掉。
-
-可以看到，pm = dynamic模式非常灵活，也通常是默认的选项。但是，dynamic模式为了最大化地优化服务器响应，会造成更多内存使用，因为这种模式只会杀掉超出最大闲置进程数（pm.max_spare_servers）的闲置进程，比如最大闲置进程数是30，最大进程数是50，然后网站经历了一次访问高峰，此时50个进程全部忙碌，0个闲置进程数，接着过了高峰期，可能没有一个请求，于是会有50个闲置进程，但是此时php-fpm只会杀掉20个子进程，始终剩下30个进程继续作为闲置进程来等待请求，这可能就是为什么过了高峰期后即便请求数大量减少服务器内存使用却也没有大量减少，也可能是为什么有些时候重启下服务器情况就会好很多，因为重启后，php-fpm的子进程数会变成最小闲置进程数，而不是之前的最大闲置进程数。
-
-pm = ondemand
-
-进程在有需求时才产生，与 dynamic 相反，pm.start_servers 在服务启动时即启动。
-
-这种模式把内存放在第一位，他的工作模式很简单，每个闲置进程，在持续闲置了pm.process_idle_timeout秒后就会被杀掉，有了这个模式，到了服务器低峰期内存自然会降下来，如果服务器长时间没有请求，就只会有一个php-fpm主进程，当然弊端是，遇到高峰期或者如果pm.process_idle_timeout的值太短的话，无法避免服务器频繁创建进程的问题，因此pm = dynamic和pm = ondemand谁更适合视实际情况而定。
+#### apache prefork
