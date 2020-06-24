@@ -1,4 +1,14 @@
 <?php
+interface Yii{
+    public function hello();
+}
 
-$x="display";
-${$x.'_result'} ();
+abstract class bod{
+    abstract function ec();
+    abstract function dc();
+}
+
+abstract class B extends bod {
+
+}
+

@@ -161,77 +161,7 @@ $obj2 = clone $obj1 把 obj1 的整个内存空间复制了一份存放到新的
 	$obj2 = clone $obj1; //克隆一个新的对象
 	$obj2->color="Blue"; //这时,$obj1->color 的值仍然为"Red"
 
-##### 真题5 类的延迟静态绑定
 
-
-首先明确两个概念
-
- - 重写 当子类继承父类后，子类在内部定义了与父类内同名的方法(函数名/参数 完全一致,只有实现不同,访问修饰符可以不同),新定义的方法会覆盖父类中对应的方法，子类只能调用内部定义的新方法。
- - 重载 函数名相同,但是参数不同，在对象调用方法时可以根据参数在`父类/子类`内定位到精准匹配的方法.
-
-按照正常的思路,子类继承父类后,如果子类的属性或者方法与父类有重合的地方,那么继承后方法或者属性的最终值都应该优先以子类中的值为准.
-	
-	<?php
-	class Animal {
-
-		public $name = 'Hello Animal';
-		public function report() {
-	    		return $this->name;
-		}
-	}
-
-	class Dog extends Animal{
-		public $name = 'Hello Dog';
-	}
-
-	$a = new Dog();
-	echo $a->report();  // 结果为 hello dog
-	
-
-再来看一个延迟静态绑定的例子:
-
-	<?php
-
-	class Animal {
-	    static $name = 'Hello Animal';
-	    public static function report() {
-		return self::$name;
-	    }
-
-	    public static function report_1(){
-		return static::$name;
-	    }
-	}
-
-	class Dog extends Animal{
-	    static $name = 'Hello Dog';
-	}
-
-	echo Dog::report();
-	echo "\n";
-	echo Dog::report_1();
-	echo "\n";
-
-	// 输出结果为 
-	// Hello Animal
-	// Hello Dog
-
- - self 通过作用域控制父类无法访问变量的最终值 
- - static 通过声明静态作用域强制在最终类中查找属性或方法的最终值
-
-##### 真题6 什么是构造函数 析构函数
-
-- 构造函数 当类被实例化的时候会自动调用.(所以调用类名::静态方法时不会触发构造函数) 
-- 析构函数 当对象被销毁时自动执行/当对象不再被引用时,将调用析构函数
-
-在 C++语言中,子类的构造函数会隐式地调用父类的无参数的构造函数。但是在PHP中,
-**子类的构造函数不会隐式地去调用父类的构造函数,需要开发者通过`parent::__construct()`来显
-式地去调用父类的构造函数。**当子类没有定义构造函数的时候,它会继承父类的构造函数,
-但前提是父类的构造函数不能被定义为`private`。
-
-默认情况下,系统仅释放对象属性所占用的内存,并不销毁在对象内部申请的资源(例
-如,打开文件、创建数据库的连接等),而利用析构函数在使用一个对象之后执行代码来清
-除这些在对象内部申请的资源(关闭文件、断开与数据库的连接)。
 
 
 
