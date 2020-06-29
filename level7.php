@@ -1,14 +1,5 @@
 <?php
-interface Yii{
-    public function hello();
-}
-
-abstract class bod{
-    abstract function ec();
-    abstract function dc();
-}
-
-abstract class B extends bod {
-
-}
-
+$str = "hello world";
+echo $str[0];
+echo $str[1];
+echo $str[2];
