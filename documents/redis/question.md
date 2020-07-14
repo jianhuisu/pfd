@@ -136,25 +136,17 @@ Score.timestamp :
     User1: 100.145454565657
     User2: 101.145454565657
 
-
-
 ##### redis 如何实现事务 
 
-这里接触的比较少,不太熟悉.
-
+这里接触的比较少,不太熟悉.redis事务不支持回滚
 
 #### MySQL里有2000w数据，redis中只存20w的数据，如何保证redis中的数据都是热点数据
 
- 相关知识：redis 内存数据集大小上升到一定大小的时候，就会施行数据淘汰策略。redis 提供 6种数据淘汰策略：
+相关知识：`redis`内存数据集大小上升到一定大小的时候，就会施行数据淘汰策略。redis提供6种数据淘汰策略：
 
-voltile-lru：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰
-
-volatile-ttl：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰
-
-volatile-random：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰
-
-allkeys-lru：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰
-
-allkeys-random：从数据集（server.db[i].dict）中任意选择数据淘汰
-
-no-enviction（驱逐）：禁止驱逐数据
+ - `voltile-lru`：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰
+ - `volatile-ttl`：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰
+ - `volatile-random`：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰
+ - `allkeys-lru`：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰
+ - `allkeys-random`：从数据集（server.db[i].dict）中任意选择数据淘汰
+ - `no-enviction`（驱逐）：禁止驱逐数据
