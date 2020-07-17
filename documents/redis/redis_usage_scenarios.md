@@ -113,30 +113,16 @@ https://developpaper.com/tips-for-using-redis-to-rank/
 
 ### 分布式锁
         
-分布式环境中使用线程来代表分布式锁的竞争者角色稍微有点不恰当了,使用客户端来称呼更合适,以下内容翻译自redis官方    
-
-_SETNX can be used, and was historically used, as a locking primitive. For example, to acquire the lock of the key foo, the client could try the following:_
-
+分布式环境中使用线程来代表分布式锁的竞争者角色稍微有点不恰当了,
+使用客户端来称呼更合适,以下内容翻译自redis官方    
 SETNX可以被用(曾经被)来作锁定原语,例如,要对资源foo进行加锁,客户端可以执行如下操作
 
     SETNX lock.foo <current Unix time + lock timeout + 1>
 
-_If SETNX returns 1 the client acquired the lock, setting the lock.foo key to the Unix time at which the lock should no longer be considered valid. The client will later use DEL lock.foo in order to release the lock._
-
 如果SETNX返回1代表客户端加锁成功,将锁的值设置为一个时间戳,该时间戳代表超过这个时间以后,该锁可以被释放(可以被加锁客户端释放,也可以被其它客户端释放)
-
-_If SETNX returns 0 the key is already locked by some other client. We can either return to the caller if it's a non blocking lock, or enter a loop retrying to hold the lock until we succeed or some kind of timeout expires._
-
 如果SETNX返回0代表客户端加锁失败,该锁被其它客户端持有使用,当前调用客户端可以选择立即返回或者采取一些合适的方法尝试重新获取锁的使用权.
-
-_When this happens we can't just call DEL against the key to remove the lock and then try to issue a SETNX,
- as there is a race condition here, when multiple clients detected an expired lock and are trying to release it._
  
 当其它客户端发现该锁已经过期时,不能仅仅使用`del + setnx`这一组命令去`释放+获取`该锁,因为这里存在竞争条件
-
-_C1 and C2 read lock.foo to check the timestamp, because they both received 0 after executing SETNX, 
-as the lock is still held by C3 that crashed after holding the lock._
-
 当客户端C1 C2使用 setnx 获取 lock.foo 锁时,发现这个锁被其它客户端持有(假设 lock.foo 目前仍被一个异常终止的客户端C3持有)
  
     C1 sends DEL lock.foo
@@ -145,13 +131,9 @@ as the lock is still held by C3 that crashed after holding the lock._
     C2 sends DEL lock.foo
     C2 sends SETNX lock.foo and it succeeds
     
-_ERROR: both C1 and C2 acquired the lock because of the race condition._
-
 此时C1 C2 两个客户端都以为自己获得了 lock.foo 的持有权,这里就产生了错误.**幸运的是**,我们可以采用以下方式来规避上述问题
 
     C4 发送 GETSET lock.foo <current Unix timestamp + lock timeout + 1>
-
-_Because of the GETSET semantic, C4 can check if the old value stored at key is still an expired timestamp. If it is, the lock was acquired._
 
 GETSET 命令允许将`get``set`两个原子性操作一次性完成,新值覆盖旧值,并返回旧值,并且GETSET也是是原子性的.
 
@@ -169,42 +151,23 @@ GETSET 命令允许将`get``set`两个原子性操作一次性完成,新值覆�
 
 如果此时另外一个Client C5调用GETSET,C5的GETSET落后于C4的GETSET,却先于C4返回到caller处,C5就可以知道,它仍然没有获得 lock.foo 的使用权,是继续等待还是另作它想则取决于C5的编写者了.
 
-_In order to make this locking algorithm more robust,_
-
 为了保障锁的使用算法更加`健壮`,
- 
-_a client holding a lock should always check the timeout didn't expire before unlocking the key with DEL_
-
 锁的持有者必须确保在调用DEL释放锁之前,锁中存储的`unix_timestamp`都不会过期 
-
-_because client failures can be complex, not just crashing but also blocking a lot of time against some operations and trying to issue DEL after a lot of time (when the LOCK is already held by another client)._
 
 造成deadlock的原因有很多种,客户端异常只是其中之一,比如一个试图去`释放`一个因为自己`阻塞了太长时间`而不再属于自己的`lock`的客户端. 
 
 !!!注意!!!:
 
-_The following pattern is discouraged in favor of the Redlock algorithm which is only a bit more complex to implement,but offers better guarantees and is fault tolerant._
-
- 下面这种设计模式并不推荐用来实现redis分布式锁。应该参考`the Redlock algorithm`(https://redis.io/topics/distlock)的实现，这个方法只是复杂一点，但是却能保证更好的使用效果。
- (上面断句应该从`discouraged`与`in favor of`中间)
-
-_We document the old pattern anyway because certain existing implementations link to this page as a reference._
+下面这种设计模式并不推荐用来实现redis分布式锁。应该参考`the Redlock algorithm`(https://redis.io/topics/distlock)的实现，这个方法只是复杂一点，但是却能保证更好的使用效果。
+(上面断句应该从`discouraged`与`in favor of`中间)
 
 官方文档中标注这种设计模式是因为很多现存的实现方式需要链接这个页面作为参考
-
-_Moreover it is an interesting example of how Redis commands can be used in order to mount programming primitives._
  
 而且,这也是一个展示如何使用Redis命令来[装载/挂载]编程原语的有趣的例子.
- 
-_Anyway even assuming a single-instance locking primitive,starting with 2.6.12 it is possible to create a much simpler locking primitive, equivalent to the one discussed here,_
 
 从2.6.12起可以使用更简单的锁定原语,等价于刚才的实现效果
- 
-_using the SET command to acquire the lock, and a simple Lua script to release the lock. The pattern is documented in the SET command page._
 
 使用SET加锁,Lua脚本释放锁,这种模式在SET页面(指官方网站中的页面)已经标注.
-
-_That said, SETNX can be used, and was historically used, as a locking primitive._
  
  ... ...  
  
@@ -212,7 +175,6 @@ _That said, SETNX can be used, and was historically used, as a locking primitive
   
 #### redis配合Lua保证操作的原子性
 
-    
 EVAL的第一个参数是一段 Lua 5.1 脚本程序。 这段Lua脚本不需要（也不应该）定义函数。它运行在 Redis 服务器中。
 
 EVAL的第二个参数是参数的个数，后面的参数（从第三个参数），表示在脚本中所用到的那些 Redis 键(key)，这些键名参数可以在 Lua 中通过全局变量 KEYS 数组，用 1 为基址的形式访问( KEYS[1] ， KEYS[2] ，以此类推)。

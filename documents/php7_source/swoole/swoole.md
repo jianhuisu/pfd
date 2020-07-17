@@ -170,7 +170,7 @@ BASE 模式的缺点：
  
 BASE 模式的适用场景：
 
- 如果客户端连接之间不需要交互，可以使用 BASE 模式。如 Memcache、HTTP 服务器等。
+如果客户端连接之间不需要交互，可以使用 BASE 模式。如 Memcache、HTTP 服务器等。
  
  
  

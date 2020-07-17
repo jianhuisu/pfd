@@ -163,10 +163,10 @@ typedef union _zend_value {
 
 二进制安全 于 非 二进制安全
 
-struct {
-	int 	len 
-	char	val
-}
+    struct {
+        int 	len 
+        char	val
+    }
 
 
 COW 除int /doubule 直接复制 外,string 都是写时复制

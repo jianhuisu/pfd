@@ -1,6 +1,7 @@
 ## php的数组的底层实现 hashtable
 
-映射函数(即：散列函数)是散列表的关键部分，它将key与value建立映射关系，一般映射函数可以根据key的哈希值与Bucket数组大小取模得到，即key->h % ht->nTableSize，但是PHP却不是这么做的：
+映射函数(即：散列函数)是散列表的关键部分，它将key与value建立映射关系，一般映射函数可以根据key的哈希值与Bucket数组大小取模得到，
+即key->h % ht->nTableSize，但是PHP却不是这么做的：
 
     nIndex = key->h | ht->nTableMask;
     
