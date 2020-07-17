@@ -78,13 +78,15 @@ worker 处理到各个阶段时将会把当前阶段更新到`fpm_scoreboard_pro
 PHP-FPM 的进程管理方式和Nginx的进程管理方式有些类似。在处理请求时，并非由主进程接受请求后转给子进程，而是子进程「抢占式」地接受用户请求。
 本质上`PHP-FPM`多进程以及`Nginx`多进程，都是在主进程监听同一个端口后，fork子进程达到多个进程监听同一端口的目的。
 
-php-fpm在`pm=static` `pm=dynamic`两种运行模式下,master进程是不会监听是否有新请求到达的，只有worker进程负责监听处理新的请求(这意味着`kill -9 master.pid`后,cgi服务仍然是可用的,worker进程仍然在监听端口).
-这是因为在启动阶段,这两种模式下,都会提前fork出worker进程,然后master进程只负责监控worker进程的运行状态即可.但是在`pm=ondemand`模式下,master需要监听是否有新请求到达,
+php-fpm在`pm=static` `pm=dynamic`两种运行模式下,**master进程是不会监听是否有新请求到达的**，
+只有worker进程负责监听处理新的请求(这意味着`kill -9 master.pid`后,cgi服务仍然是可用的,worker进程仍然在监听端口).
+这是因为在启动阶段,这两种模式下,都会提前fork出worker进程,然后master进程只负责监控worker进程的运行状态即可.
+但是在`pm=ondemand`模式下,master需要监听是否有新请求到达,
 如果有新请求到达,master需要`fork worker`.一般`ondemand`较少使用,所以下面主要介绍`pm=static`,`pm=dynamic`两种模式.
 
 `php-fpm`启动进程A会调用`MINIT`方法，然后`fork`出一个`fpm-master`进程B，进程B启动多个`php-cgi`子进程C，启动工作完成后，启动进程A就退出了.其它进程常驻内存.
 master 启动了一个定时器，每隔 1s 触发一次，主要用于 dynamic、ondemand 模式下的 worker 管理，
-master 会定时检查各 worker pool 的 worker 进程数，通过此定时器实现 worker 数量的控制.
+master 会定时检查各 `worker pool` 的worker进程数，通过此定时器实现 worker 数量的控制.
 还有一点需要注意,`woker`抢占式的进行服务.
 
 fpm_run()中`master`进程将进入fpm_event_loop()分支执行
@@ -100,12 +102,13 @@ master进程与worker进程通信是通过共享内存的方式`mmap`.master监�
 php-fpm中一个pool监听一个端口,一个pool中可能会有多个进程.~~这意味着会存在多个worker监听同一个port~~.
 Linux内核的`SO_REUSEPORT`选项可以实现多个进程监听同一个端口.
 
-一个pool中多个worker进程同时阻塞在`accept`等待监听套接字已建立连接的信息，当内核在该监听套接字上建立一个连接，将同时唤起这些处于accept阻塞的worker进程，
-但仅有一个worker进程accept成功,其它worker进程被唤起后没抢到“连接”而再次进入休眠,唤起多余的进程将影响服务器的性能.从而导致`惊群现象`的产生.
+一个pool中多个worker进程同时阻塞在`accept`等待监听套接字已建立连接的信息，当内核在该监听套接字上建立一个连接，将同时唤起这些处于`accept`阻塞的worker进程，
+但仅有一个worker进程`accept`成功,其它worker进程被唤起后没抢到“连接”而再次进入休眠,唤起多余的进程将影响服务器的性能.从而导致`惊群现象`的产生.
 
-#### worker nums 
+#### 如何设置一个合适的`worker nums` 
 
 关于PHP-FPM子进程数量说法正确的有？
+
 A、PHP-FPM 子进程数量不能太多，太多了增加进程管理的开销以及上下文切换的开销
 B、dynamic 方式下，最合适的子进程数量为 在 N + 20% 和 M / m 之间 （N 是 CPU 内核数量，M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
 C、static方式：M / (m * 1.2) （M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
