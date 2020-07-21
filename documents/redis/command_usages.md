@@ -1,4 +1,6 @@
-未显式指定key的过期时间,该key默认永久存储
+## redis 实用命令 
+ 
+ - 设定key时未显式指定key的过期时间,该key默认永久存储
 
 ttl demo_key
 
@@ -77,3 +79,50 @@ expire demo_key 10  // expire 10 seconds
     (integer) 1
     127.0.0.1:6379[1]> zrank page_rank baidu.com
     (integer) 0
+
+#### hash 
+
+    127.0.0.1:6379> HSET myhash field1 "foo" field2 "bar"
+    (integer) 2
+    127.0.0.1:6379> HGET myhash field1
+    "foo"
+    127.0.0.1:6379> HMGET myhash field2
+    "bar"
+    
+#### set
+
+求交集
+    
+    redis 127.0.0.1:6379> SADD myset "hello"
+    (integer) 1
+    redis 127.0.0.1:6379> SADD myset "foo"
+    (integer) 1
+    redis 127.0.0.1:6379> SADD myset "bar"
+    (integer) 1
+    redis 127.0.0.1:6379> SADD myset2 "hello"
+    (integer) 1
+    redis 127.0.0.1:6379> SADD myset2 "world"
+    (integer) 1
+    redis 127.0.0.1:6379> SINTER myset myset2
+    1) "hello"    
+    
+#### 管理命令
+
+查看所有的`key`,模糊匹配`key`
+
+    127.0.0.1:6379> keys *
+    1) "numbers"
+    
+查看数据类型的底层实现
+    
+    127.0.0.1:6379> object encoding numbers
+    "intset"
+    127.0.0.1:6379> set name sujianhui
+    OK
+    127.0.0.1:6379> object encoding name
+    "embstr"
+    127.0.0.1:6379> HSET myhash field1 "foo" field2 "bar"
+    (integer) 2
+    127.0.0.1:6379> object encoding myhash
+    "ziplist"
+ 
