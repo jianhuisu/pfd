@@ -75,7 +75,9 @@ worker 处理到各个阶段时将会把当前阶段更新到`fpm_scoreboard_pro
        
 ##### master : 管理worker进程, 信号处理
 
-PHP-FPM 的进程管理方式和Nginx的进程管理方式有些类似。在处理请求时，并非由主进程接受请求后转给子进程，而是子进程「抢占式」地接受用户请求。
+PHP-FPM 的进程管理方式和Nginx的进程管理方式有些类似。
+**在处理请求时，并非由主进程接受请求后转给子进程，而是子进程「抢占式」地接受用户请求。**
+woker监听端口,抢占式处理请求.
 本质上`PHP-FPM`多进程以及`Nginx`多进程，都是在主进程监听同一个端口后，fork子进程达到多个进程监听同一端口的目的。
 
 php-fpm在`pm=static` `pm=dynamic`两种运行模式下,**master进程是不会监听是否有新请求到达的**，
@@ -86,7 +88,7 @@ php-fpm在`pm=static` `pm=dynamic`两种运行模式下,**master进程是不会�
 
 `php-fpm`启动进程A会调用`MINIT`方法，然后`fork`出一个`fpm-master`进程B，进程B启动多个`php-cgi`子进程C，启动工作完成后，启动进程A就退出了.其它进程常驻内存.
 master 启动了一个定时器，每隔 1s 触发一次，主要用于 dynamic、ondemand 模式下的 worker 管理，
-master 会定时检查各 `worker pool` 的worker进程数，通过此定时器实现 worker 数量的控制.
+master 会定时检查各 `worker pool` 的worker进程数，通过此定时器实现worker数量的控制.
 还有一点需要注意,`woker`抢占式的进行服务.
 
 fpm_run()中`master`进程将进入fpm_event_loop()分支执行
@@ -99,7 +101,7 @@ master进程与worker进程通信是通过共享内存的方式`mmap`.master监�
 
 #### php-fpm 的惊群问题
 
-php-fpm中一个pool监听一个端口,一个pool中可能会有多个进程.~~这意味着会存在多个worker监听同一个port~~.
+php-fpm中一个pool监听一个端口,一个pool中可能会有多个进程.
 Linux内核的`SO_REUSEPORT`选项可以实现多个进程监听同一个端口.
 
 一个pool中多个worker进程同时阻塞在`accept`等待监听套接字已建立连接的信息，当内核在该监听套接字上建立一个连接，将同时唤起这些处于`accept`阻塞的worker进程，
@@ -109,10 +111,10 @@ Linux内核的`SO_REUSEPORT`选项可以实现多个进程监听同一个端口.
 
 关于PHP-FPM子进程数量说法正确的有？
 
-A、PHP-FPM 子进程数量不能太多，太多了增加进程管理的开销以及上下文切换的开销
-B、dynamic 方式下，最合适的子进程数量为 在 N + 20% 和 M / m 之间 （N 是 CPU 内核数量，M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
-C、static方式：M / (m * 1.2) （M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
-D、pm.max_requests 可以随便设置 ,但是为了预防内存泄漏的风险，还是设置一个合理的数比较好
+ A、PHP-FPM 子进程数量不能太多，太多了增加进程管理的开销以及上下文切换的开销
+ B、dynamic 方式下，最合适的子进程数量为 在 N + 20% 和 M / m 之间 （N 是 CPU 内核数量，M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
+ C、static方式：M / (m * 1.2) （M 是 PHP 能利用的内存数量，m 是每个 PHP 进程平均使用的内存数量）
+ D、pm.max_requests 可以随便设置 ,但是为了预防内存泄漏的风险，还是设置一个合理的数比较好
 
 ##### php-fpm 的三种运行模式	
 
@@ -121,19 +123,27 @@ D、pm.max_requests 可以随便设置 ,但是为了预防内存泄漏的风险�
 	pm = ondemand
 
 php-fpm三种对子进程的管理方式
-pm = static
+##### pm = static
 
 静态，始终保持一个固定数量的子进程，这个数由（pm.max_children）定义，这种方式很不灵活，也通常不是默认的。
 
-pm = dynamic
+##### pm = dynamic
 
-动态，在更老一些的版本中，dynamic被称作apache-like。子进程的数量在下面配置的基础上动态设置：pm.max_children，pm.start_servers，pm.min_spare_servers，pm.max_spare_servers。
+动态，在更老一些的版本中，dynamic被称作apache-like。
+子进程的数量在下面配置的基础上动态设置：pm.max_children，pm.start_servers，pm.min_spare_servers，pm.max_spare_servers。
+启动时，会产生固定数量的子进程（由pm.start_servers控制）可以理解成最小子进程数，
+而最大子进程数则由pm.max_children去控制，OK，这样的话，子进程数会在最大和最小数范围中变化，
+还没有完，闲置的子进程数还可以由另2个配置控制，分别是pm.min_spare_servers和pm.max_spare_servers，
+也就是闲置的子进程也可以有最小和最大的数目，而如果闲置的子进程超出了pm.max_spare_servers，则会被杀掉。
 
-启动时，会产生固定数量的子进程（由pm.start_servers控制）可以理解成最小子进程数，而最大子进程数则由pm.max_children去控制，OK，这样的话，子进程数会在最大和最小数范围中变化，还没有完，闲置的子进程数还可以由另2个配置控制，分别是pm.min_spare_servers和pm.max_spare_servers，也就是闲置的子进程也可以有最小和最大的数目，而如果闲置的子进程超出了pm.max_spare_servers，则会被杀掉。
+可以看到，pm = dynamic模式非常灵活，也通常是默认的选项。
+但是，dynamic模式为了最大化地优化服务器响应，会造成更多内存使用，因为这种模式只会杀掉超出最大闲置进程数（pm.max_spare_servers）的闲置进程，
+比如最大闲置进程数是30，最大进程数是50，然后网站经历了一次访问高峰，此时50个进程全部忙碌，0个闲置进程数，接着过了高峰期，
+可能没有一个请求，于是会有50个闲置进程，但是此时php-fpm只会杀掉20个子进程，始终剩下30个进程继续作为闲置进程来等待请求，
+这可能就是为什么过了高峰期后即便请求数大量减少服务器内存使用却也没有大量减少，也可能是为什么有些时候重启下服务器情况就会好很多，
+因为重启后，php-fpm的子进程数会变成最小闲置进程数，而不是之前的最大闲置进程数。
 
-可以看到，pm = dynamic模式非常灵活，也通常是默认的选项。但是，dynamic模式为了最大化地优化服务器响应，会造成更多内存使用，因为这种模式只会杀掉超出最大闲置进程数（pm.max_spare_servers）的闲置进程，比如最大闲置进程数是30，最大进程数是50，然后网站经历了一次访问高峰，此时50个进程全部忙碌，0个闲置进程数，接着过了高峰期，可能没有一个请求，于是会有50个闲置进程，但是此时php-fpm只会杀掉20个子进程，始终剩下30个进程继续作为闲置进程来等待请求，这可能就是为什么过了高峰期后即便请求数大量减少服务器内存使用却也没有大量减少，也可能是为什么有些时候重启下服务器情况就会好很多，因为重启后，php-fpm的子进程数会变成最小闲置进程数，而不是之前的最大闲置进程数。
-
-pm = ondemand
+##### pm = ondemand
 
 进程在有需求时才产生，与 dynamic 相反，pm.start_servers 在服务启动时即启动。
 
