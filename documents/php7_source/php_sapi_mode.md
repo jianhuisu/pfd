@@ -70,5 +70,38 @@ example.
     [sujianhui@dev529 ~]$>sudo kill -INT 17122
     [sujianhui@dev529 ~]$>ps aux | grep php-fpm
     sujianh+ 17229  0.0  0.0 112816   976 pts/3    S+   17:03   0:00 grep --color=auto php-fpm
+
+nginx的master-worker机制与fpm大体相同.但是有一个问题需要注意,使用systemctl启动起来的master被kill以后，worker也会死掉.
+
+正常启动nginx,kill掉master
+
+    [sujianhui@dev0529 sbin]$>which nginx
+    /usr/sbin/nginx
+    [sujianhui@dev0529 sbin]$>sudo nginx 
+    [sujianhui@dev0529 sbin]$>ps aux | grep nginx
+    root      4562  0.0  0.0  46608  1084 ?        Ss   21:46   0:00 nginx: master process nginx
+    sujianh+  4563  0.0  0.0  49128  2088 ?        S    21:46   0:00 nginx: worker process
+    sujianh+  4578  0.0  0.0 112812   972 pts/0    S+   21:46   0:00 grep --color=auto nginx
+    
+    [sujianhui@dev0529 sbin]$>sudo kill -9 4562
+    [sujianhui@dev0529 sbin]$>ps aux | grep nginx
+    sujianh+  4563  0.0  0.0  49128  2088 ?        S    21:46   0:00 nginx: worker process
+    sujianh+  4612  0.0  0.0 112812   972 pts/0    S+   21:46   0:00 grep --color=auto nginx
+    [sujianhui@dev0529 sbin]$>kill -9 4563
+    [sujianhui@dev0529 sbin]$>ps aux | grep nginx
+    sujianh+  4638  0.0  0.0 112812   972 pts/0    S+   21:47   0:00 grep --color=auto nginx
+    
+使用systemctl启动的master被kill掉以后,worker也会杀掉
+
+    [sujianhui@dev0529 sbin]$>systemctl start nginx
+    [sujianhui@dev0529 sbin]$>ps aux | grep nginx
+    root      4678  0.0  0.0  46608  1072 ?        Ss   21:47   0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+    sujianh+  4679  0.0  0.0  49124  2080 ?        S    21:47   0:00 nginx: worker process
+    sujianh+  4702  0.0  0.0 112812   972 pts/0    S+   21:47   0:00 grep --color=auto nginx
+    [sujianhui@dev0529 sbin]$>sudo kill -9 4678
+    [sujianhui@dev0529 sbin]$>ps aux | grep nginx
+    sujianh+  4732  0.0  0.0 112812   972 pts/0    S+   21:47   0:00 grep --color=auto nginx
+
+
    
 #### apache prefork
