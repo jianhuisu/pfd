@@ -6,6 +6,11 @@
  - `SHOW VARIABLES LIKE '%max_connections%'`;   查询配置文件中的配置的最大并发连接数
  - `SHOW STATUS LIKE '%Threads_connected%'`;    查询当前的并发连接数        
 
+注意：
+
+ - VARIABLE 更倾向于表示我们在`my.cnf`里面预定义的配置选项,查看命令格式类似于`mysql> show variables where variable_name like 'character_set_%' or variable_name like 'set_%';` 
+ - STATUS   更倾向于表示`mysql-server`在实际运行过程中的一些运行指标
+
 实时查看：
 
     mysql> show status like 'Threads%';  

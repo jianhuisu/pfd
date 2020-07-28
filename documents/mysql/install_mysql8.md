@@ -13,7 +13,7 @@
     
 ### user set 
 
-#### find root temporary password
+#### 找到安装后的临时密码
 
     [guangsu@xuwei bin]$ sudo grep 'temporary password' /var/log/mysqld.log
     [guangsu@xuwei bin]$ mysql -uroot -p
@@ -23,18 +23,20 @@
     Your MySQL connection id is 8
     Server version: 8.0.19
     ...
-    
-change root password , actually `'root'@'localhost'` and `'root'@'%'` is two user 
+
+更改root的密码,注意`'root'@'localhost'` and `'root'@'%'`实际上是两个用户.    
+change root password , actually  is two user 
  
     mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'Debugger123@xuwei';
     Query OK, 0 rows affected (0.01 sec)
-    // or : set password for 'root'@'localhost'=password('TestBicon@123');     but not recommand
 
-grant root can login from every where 
+或者我们可以使用 `set password for 'root'@'localhost'=password('TestBicon@123');`,但是这种方式不值的推荐.
+
+授权root可以在任意远程IP登陆. 
 
     mysql> GRANT ALL ON *.* TO 'root'@'%';
 
-add another mysql user  
+添加另外一个用于运营的`msyql user`  
         
     mysql> use mysql;
     Reading table information for completion of table and column names
@@ -57,7 +59,7 @@ add another mysql user
     mysql> flush privileges;
     Query OK, 0 rows affected (0.01 sec)
 
-#### use utf8mb4
+#### 设置数据库使用`utf8mb4`字符集
 
     mysql> SHOW VARIABLES WHERE Variable_name LIKE 'character_set_%' OR Variable_name LIKE 'collation%';
     +--------------------------+--------------------------------+
@@ -77,20 +79,20 @@ add another mysql user
     +--------------------------+--------------------------------+
     11 rows in set (0.00 sec)
 
-not need modify
+不需要修改
 
-#### uninstall 
+#### 如何卸载刚才安装mysql-server 
 
     yum remove mysql-community-server
-    d
+    
 find use cmd like `rpm -qa | grep mysql` and use `yum remove name` to remove , until all remove (`rpm -qa | grep -i mysql` => `rpm -e name`) 
 
-delete data files 
+删除生成的数据文件，日志文件,配置文件 
 
     rm -rf /var/lib/mysql
     rm /etc/my.cnf
     rm -rf /usr/share/mysql-8.0 
 
-#### copy from 
+#### 参考资料 
 
 https://blog.csdn.net/qq_38591756/article/details/82958333
