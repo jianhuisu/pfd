@@ -46,6 +46,8 @@ change root password , actually  is two user
     mysql> create user 'guangsu'@'%' identified by '4466xdebug_User';
     Query OK, 0 rows affected (0.02 sec)
     
+    ALTER USER 'guangsu'@'%' IDENTIFIED WITH mysql_native_password BY '4466xdebug_User';
+    
     mysql> grant all privileges on *.* to guangsu;
     Query OK, 0 rows affected (0.02 sec)
     

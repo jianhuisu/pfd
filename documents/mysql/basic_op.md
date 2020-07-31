@@ -1,5 +1,28 @@
 ### 常见SQL
 
+模拟随机数据
+
+    insert into user(name,email) values(concat_ws('_','sujianhui',ROUND(RAND() * 5444 + 234)),concat_ws('',ROUND(RAND() * 5444 + 234), '@qq.com'));
+
+建表语句
+
+    CREATE TABLE `tbl` (
+      `id` int unsigned NOT NULL AUTO_INCREMENT,
+      `uid` int unsigned NOT NULL DEFAULT '0',
+      `title` char(50) NOT NULL DEFAULT '',
+      `score` tinyint unsigned NOT NULL DEFAULT '0',
+      PRIMARY KEY (`id`),
+      KEY `uid` (`uid`,`score`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+    
+    create table user(
+        id int unsigned not null auto_increment,
+        name char(50) not null default '',
+        email char(50) not null default '',
+        primary key(id),
+        index name(name)
+    )engine=innodb;
+    
 mysql查一张表有哪些索引
     
     mysql> show index from left_prefix;
