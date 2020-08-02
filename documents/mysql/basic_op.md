@@ -1,8 +1,23 @@
 ### 常见SQL
 
-模拟随机数据
+查看mysql启动时,加载my.cnf的顺序
 
-    insert into user(name,email) values(concat_ws('_','sujianhui',ROUND(RAND() * 5444 + 234)),concat_ws('',ROUND(RAND() * 5444 + 234), '@qq.com'));
+    [sujianhui@dev0529 ~]$>mysql --help | grep my.cnf
+                          order of preference, my.cnf, $MYSQL_TCP_PORT,
+    /etc/my.cnf /etc/mysql/my.cnf /usr/etc/my.cnf ~/.my.cnf 
+
+mysql在启动时如果不能找到my.cnf，会加载编译时设置的默认配置项.而不是报错停止启动.
+
+模拟随机数据:生成随机初始数据(多次执行)
+
+    mysql> insert into user(name,email) values(concat_ws('_','sujianhui',ROUND(RAND() * 5444 + 234)),concat_ws('',ROUND(RAND() * 5444 + 234), '@qq.com'));
+
+模拟随机数据:扩散随机数据(多次执行),
+    
+    mysql> insert into test_page(name,email) select name,email from test_page order by rand();
+    // 这个不是分组，只是排序，rand()只是生成一个随机数。 ORDER By rand()，这样每次检索的结果排序会不同
+    
+        
 
 建表语句
 
@@ -20,7 +35,8 @@
         name char(50) not null default '',
         email char(50) not null default '',
         primary key(id),
-        index name(name)
+        index name(name),
+        index name_em(name,email)
     )engine=innodb;
     
 mysql查一张表有哪些索引
@@ -29,12 +45,27 @@ mysql查一张表有哪些索引
     
 Mysql 中！=和 <> 的区别
 
-！=是以前sql标准，<>是现在使用的sql标准，推荐使用<>。
+    !=是以前sql标准，<>是现在使用的sql标准，推荐使用<>。
 
-对现有表修改,追加索引.
+对现有表修改,追加普通索引.
 
     mysql> ALTER TABLE test_1 ADD INDEX index_code(code);
+
+对现有表修改,追加主键索引.
+
+    mysql> alter table test_page add primary key id(id);
+
+对现有表修改,修改字段类型.
     
+    mysql> alter table test_page modify column id int(11) unsigned not null auto_increment [primary key];
+
+修改表,增加列    
+    
+    mysql> alter table test_page add column id int(11) unsigned not null auto_increment primary key;
+
+修改表,删除列    
+    
+    mysql> alter table test_page drop column columnName;
     
 查看表的基本状态(默认查看当前库中所有表的状态)
 
