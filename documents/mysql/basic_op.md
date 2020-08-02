@@ -63,9 +63,13 @@ Mysql 中！=和 <> 的区别
     
     mysql> alter table test_page add column id int(11) unsigned not null auto_increment primary key;
 
-修改表,删除列    
+修改表,删除列(会自动删除索引)    
     
     mysql> alter table test_page drop column columnName;
+    
+重命名表
+    
+    mysql>rename table film_actor to actor;    
     
 查看表的基本状态(默认查看当前库中所有表的状态)
 
@@ -77,4 +81,28 @@ Mysql 中！=和 <> 的区别
     mysql> show status where variable_name like 'handler%' or variable_name like 'created%';
     mysql> show session status where variable_name like 'handler%' or variable_name like 'created%';
     mysql> show global status where variable_name like 'handler%' or variable_name like 'created%';
-        
+
+group by
+
+    select name,group_concat(id) from user group by name
+
+rollup
+    
+    mysql> SELECT
+    ->  coalesce(business_name,'总计')
+    ->  business_name,
+    ->  sum(work_level_1_xiangmuhexin),
+    ->  sum(work_level_1_totalize)
+    ->  FROM
+    ->  middle_org_work_level1
+    ->  WHERE date='2019-07-10' 
+    ->  group by business_name with ROLLUP;
+    
+    +--------------------+--------------------------------+----------------------------+
+    | business_name      | sum(work_level_1_xiangmuhexin) | sum(work_level_1_totalize) |
+    +--------------------+--------------------------------+----------------------------+
+    | 中端                |                             26 |                        545 |
+    | 前端运营纵线         |                              0 |                        113 |
+    ...
+    | 总计                |                            231 |                       5978 |
+    +--------------------+--------------------------------+----------------------------+            
