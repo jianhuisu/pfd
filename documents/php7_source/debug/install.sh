@@ -15,7 +15,7 @@ wget https://libzip.org/download/libzip-1.3.2.tar.gz
 tar xvf libzip-1.3.2.tar.gz
 cd libzip-1.3.2
 ./configure
-make && make install
+sudo make && sudo make install
 cd ~
 
 sudo cp php-fpm.conf.default php-fpm.conf

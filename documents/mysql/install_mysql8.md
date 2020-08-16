@@ -24,13 +24,12 @@
     Server version: 8.0.19
     ...
 
-更改root的密码,注意`'root'@'localhost'` and `'root'@'%'`实际上是两个用户.    
-change root password , actually  is two user 
+更改root的密码,注意`'root'@'localhost'` and `'root'@'%'`实际上是两个用户.     
  
     mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'Debugger123@xuwei';
     Query OK, 0 rows affected (0.01 sec)
 
-或者我们可以使用 `set password for 'root'@'localhost'=password('TestBicon@123');`,但是这种方式不值的推荐.
+或者我们可以使用 `set password for 'root'@'localhost'=password('TestBicon@123');`(but not recommend)
 
 授权root可以在任意远程IP登陆. 
 
@@ -46,7 +45,8 @@ change root password , actually  is two user
     mysql> create user 'guangsu'@'%' identified by '4466xdebug_User';
     Query OK, 0 rows affected (0.02 sec)
     
-    ALTER USER 'guangsu'@'%' IDENTIFIED WITH mysql_native_password BY '4466xdebug_User';
+    mysql> ALTER USER 'guangsu'@'%' IDENTIFIED WITH mysql_native_password BY '4466xdebug_User';
+    Query OK, 0 rows affected (0.02 sec)
     
     mysql> grant all privileges on *.* to guangsu;
     Query OK, 0 rows affected (0.02 sec)
