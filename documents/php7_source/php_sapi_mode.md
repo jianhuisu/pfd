@@ -36,7 +36,7 @@ PHP脚本要执行有很多方式，通过Web服务器，或者直接在命令�
     
  - `kill -USR1 "php-fpm master pid"` 重新打开日志文件. 执行完毕后 你会发现`php-fpm master/worker`进程`id` **not change**  
  - `kill -USR2 "php-fpm master pid"`  平滑重载所有`php-fpm`进程,执行完毕后你会发现`php-fpm master/worker`进程`id` **have changed**.
- - `kill -KILL/-9 php-fpm-master.pid` , 强制杀死master进程,该信号不允许中断/阻塞,此时master进程无法通知回收worker进程,所以此时`worker`进程仍然监听port,仍然可以正常处理http请求.
+ - `kill -KILL/-9 php-fpm-master.pid` , **强制杀死master进程,该信号不允许中断/阻塞,此时master进程无法通知回收worker进程**,所以此时`worker`进程仍然监听port,仍然可以正常处理http请求.
  - `kill -INT/-QUIT/-TERM  master pid` ,  `stop php-fpm service` **信号被当前进程树接收到**.也就是说，不仅当前进程会收到信号，它的子进程也会收到.
  - `kill master pid` 发送`SIGTERM`信号到进程 信号可能会被阻塞,`master`可以回收worker进程.	
 	 
@@ -101,6 +101,45 @@ nginx的master-worker机制与fpm大体相同.但是有一个问题需要注意,
     [sujianhui@dev0529 sbin]$>sudo kill -9 4678
     [sujianhui@dev0529 sbin]$>ps aux | grep nginx
     sujianh+  4732  0.0  0.0 112812   972 pts/0    S+   21:47   0:00 grep --color=auto nginx
+
+rective run 
+    
+    [sujianhui@dev529 ~]$>kill -l
+     1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+     6) SIGABRT	 7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+    11) SIGSEGV	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+    16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+    21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+    26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+    31) SIGSYS	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+    38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+    43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+    48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+    53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+    58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+    63) SIGRTMAX-1	64) SIGRTMAX	
+
+    [sujianhui@dev529 ~]$>sudo nginx 
+    [sudo] password for sujianhui: 
+    [sujianhui@dev529 ~]$>ps aux | grep nginx
+    root      3628  0.0  0.0  46600  1052 ?        Ss   09:49   0:00 nginx: master process nginx
+    sujianh+  3629  0.0  0.0  49096  2056 ?        S    09:49   0:00 nginx: worker process
+    sujianh+  3637  0.0  0.0 112812   972 pts/0    S+   09:49   0:00 grep --color=auto nginx
+
+    [sujianhui@dev529 ~]$>sudo kill -SIGTERM 3628
+    [sujianhui@dev529 ~]$>ps aux | grep nginx
+    sujianh+  3744  0.0  0.0 112812   972 pts/0    S+   09:50   0:00 grep --color=auto nginx
+    
+    [sujianhui@dev529 ~]$>sudo nginx 
+    [sujianhui@dev529 ~]$>ps aux | grep nginx
+    root      3766  0.0  0.0  46600  1052 ?        Ss   09:51   0:00 nginx: master process nginx
+    sujianh+  3767  0.0  0.0  49096  2056 ?        S    09:51   0:00 nginx: worker process
+    sujianh+  3775  0.0  0.0 112812   972 pts/0    S+   09:51   0:00 grep --color=auto nginx
+    [sujianhui@dev529 ~]$>sudo kill -9 3766
+    [sujianhui@dev529 ~]$>ps aux | grep nginx
+    sujianh+  3767  0.0  0.0  49096  2056 ?        S    09:51   0:00 nginx: worker process
+    sujianh+  3799  0.0  0.0 112812   972 pts/0    S+   09:51   0:00 grep --color=auto nginx
+
 
 
    
