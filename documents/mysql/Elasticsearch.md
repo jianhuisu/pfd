@@ -154,5 +154,5 @@ elasticsearch
 #### FAQ
 
 Near Real Time，简称 NRT
-
+Compute  计算
 https://zhuanlan.zhihu.com/p/62892586
