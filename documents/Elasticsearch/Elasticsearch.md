@@ -100,10 +100,10 @@ use which one ？
 
 吕老师：但是我让你说出带“前”字的诗句，由于没有索引，你只能遍历脑海中所有诗词，当你的脑海中诗词量大的时候，就很难在短时间内得到结果了。
 
-![](.source_images/08add8bd.png)
-![](.source_images/65f7330f.png)
-![](.source_images/6277ef0c.png)
-![](.source_images/c29e1f04.png)
+![](../mysql/.source_images/08add8bd.png)
+![](../mysql/.source_images/65f7330f.png)
+![](../mysql/.source_images/6277ef0c.png)
+![](../mysql/.source_images/c29e1f04.png)
 
 倒排包含两部分：
 
