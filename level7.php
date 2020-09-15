@@ -1,35 +1,36 @@
 <?php
 
-$conn = mysqli_connect("127.0.0.1","guangsu","4466xdebug_User","yii2advanced");
+$a = '0';
+$b = 0;
+$c = '';
+$d = NULL;
 
-if (!$conn) {
-    echo "连接失败！";
-    echo mysqli_connect_error();
-    exit();
-}
+var_dump(empty($a));
+var_dump(empty($b));
+var_dump(empty($c));
+var_dump(empty($d));
+var_dump(empty(false));
+var_dump(empty(true));
+echo "-------\n";
+var_dump(isset($a));
+var_dump(isset($b));
+var_dump(isset($c));
+var_dump(isset($d));
+// var_dump(isset(false)); error    非法调用方式
+// var_dump(isset(true));  error    非法调用方式
+echo "------\n";
+var_dump(is_null($a));
+var_dump(is_null($b));
+var_dump(is_null($c));
+var_dump(is_null($d));
+var_dump(is_null(true));
+var_dump(is_null(false));
+echo "------\n";
+var_dump( '0' === 0);
+var_dump( '0' == 0);
+var_dump( '0abc' == 0);
 
-mysqli_query($conn,"set names utf8");
 
-$sql = "select count(1) from test_1";
+exit;
 
-$result = mysqli_query($conn,$sql);
 
-if($result === false) {
-
-    printf("errorMsg: %s\n", mysqli_error($conn));
-    throw new \mysqli_sql_exception(mysqli_error($conn));
-    exit;
-}
-
-$fetchRes = [];
-// mysqli_fetch_assoc($result) 关联
-// mysqli_fetch_row($result)  索引
-// mysqli_fetch_array($result)  assoc + row
-while($row = mysqli_fetch_assoc($result))
-{
-    $fetchRes[] = $row;
-}
-
-var_dump($fetchRes);
-
-while(1){};
