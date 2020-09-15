@@ -57,6 +57,9 @@ sendfile的引入不仅减少了数据复制，还减少了上下文切换。
  1. 再从内核缓冲区copy至内核中socket相关的缓冲区 (not need through user buf)
  1. 最后再socket相关的缓冲区copy到协议引擎
 
+
+**核心原理就是 内核缓冲区与用户缓冲区共用一块内存.**
+
 >todo : if user need modify file contents , how to do ?
 >请教一下 zero copy 时如果用户需要对文件内容修改如何处理？是因为kafka的应用场景从本身避免了修改需求 所以才可以采用 copy策略吗？
 
