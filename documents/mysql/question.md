@@ -5,6 +5,8 @@
 
 ##### 分库分表之后，id主键如何处理？
 
+https://www.cnblogs.com/kuotian/p/12869914.html#%E7%BC%BA%E7%82%B9
+
 A、单库生成自增 id
 B、设置数据库 sequence 或者表自增字段步长
 C、UUID
@@ -65,8 +67,9 @@ snowflake 算法是 twitter 开源的分布式 id 生成算法，采用 Scala �
 
 ##### 超大分页如何处理
 
- - 偏移过程+二次回表
- - 
+ - fu gai suo yi
+ - save last_id ,avoid deep jump , use redis  
+
 
 首先了解查询语句的执行流程？？？？
 

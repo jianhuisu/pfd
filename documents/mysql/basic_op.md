@@ -18,7 +18,6 @@ mysql在启动时如果不能找到my.cnf，会加载编译时设置的默认配
     // 这个不是分组，只是排序，rand()只是生成一个随机数。 ORDER By rand()，这样每次检索的结果排序会不同
     
         
-
 建表语句
 
     CREATE TABLE `tbl` (
