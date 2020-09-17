@@ -5,9 +5,11 @@
     $j = 2;
 
     echo "i value : $i ; j value : $j \n"; // 2 , 2
+    xdebug_debug_zval('i');
+    xdebug_debug_zval('j');
 
     unset($j);
-    echo "i value : $i ; j value : $j \n"; // 2 , NULL
+    //echo "i value : $i ; j value : $j \n"; // 2 , NULL
 
 
    // unset($i);
