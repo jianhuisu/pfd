@@ -121,3 +121,13 @@ mysql> select date_format(from_unixtime( round( 86400 * 30 * rand()  + unix_time
 mysql> insert into act(type,st,ed,status) values(round(rand() + 11),date_format(from_unixtime( round( 86400 * 30 * rand()  + unix_timestamp('2020-08-01')) ),'%Y-%m-%d'),date_format(from_unixtime( round( 86400 *
 30 * rand()  + unix_timestamp('2020-09-01')) ),'%Y-%m-%d'),round(rand()));
 Query OK, 1 row affected (0.01 sec)
+
+
+create table act(
+    id int unsigned not null auto_increment primary key,
+    type int unsigned not null default 0,
+    st datetime,
+    ed datetime,
+    status tinyint
+)engine=innodb
+
