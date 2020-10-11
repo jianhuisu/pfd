@@ -1,27 +1,4 @@
-# 正则匹配URL
-
-URL客户端与服务端 按照相同的协议发送，接收
-
-要匹配URL,首先需要了解URL的构成.
-
-scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
-
- scheme => protocol  协议
- hostname 域名
- port  端口
- path  路径
- parameters => query  参数
- fragment => anchor 片段
- 
-使用中括号包含的部分代表可以省略，省略时该部分按照默认值解析.
-
-比如常见默认值:
-
- port : 80
- user : ''
- password：''
-
-## URL的编码
+# URL的编码
 
 URL编码遵循下列规则： 
 

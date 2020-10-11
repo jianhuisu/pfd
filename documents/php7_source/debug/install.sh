@@ -25,3 +25,7 @@ cat www.conf.default | egrep -v ';|^$' >> www.conf
 cd sbin/
 sudo ./php-fpm
 
+vim php.ini
+
+display_errors = On
+error_log = php_errors.log
