@@ -1,7 +1,7 @@
 ## php源码中的常见宏
 
 CG # define CG(v) (compiler_globals.v)  compile 编译宏
-EG # define EG(v) (executor_globals.v)  executor 执行宏  
+EG # define EG(v) (executor_globals.v)  executor 执行宏 EG资源的结构是zend_executor_globals，所以这个值就是sizeof(zend_executor_globals) 
 PG # define PG(v) (core_globals.v)      
 SG # define SG(v) (sapi_globals.v) 
 AG # define AG(v) alloc_globals 是一个全局变量 
