@@ -38,7 +38,7 @@ PHP脚本要执行有很多方式，通过Web服务器，或者直接在命令�
  - `kill -USR2 "php-fpm master pid"`  平滑重载所有`php-fpm`进程,执行完毕后你会发现`php-fpm master/worker`进程`id` **have changed**.
  - `kill -KILL/-9 php-fpm-master.pid` , **强制杀死master进程,该信号不允许中断/阻塞,此时master进程无法通知回收worker进程**,所以此时`worker`进程仍然监听port,仍然可以正常处理http请求.
  - `kill -INT/-QUIT/-TERM  master pid` ,  `stop php-fpm service` **信号被当前进程树接收到**.也就是说，不仅当前进程会收到信号，它的子进程也会收到.
- - `kill master pid` 发送`SIGTERM`信号到进程 信号可能会被阻塞,`master`可以回收worker进程.	
+ - `kill master pid` 发送`SIGTERM`信号到进程 信号可能会被阻塞,`master`可以回收`worker`进程.	
 	 
 example.
 
@@ -71,7 +71,9 @@ example.
     [sujianhui@dev529 ~]$>ps aux | grep php-fpm
     sujianh+ 17229  0.0  0.0 112816   976 pts/3    S+   17:03   0:00 grep --color=auto php-fpm
 
+**so we should use `sudo kill -INT master.pid` to kill php-fpm service.**
 nginx的master-worker机制与fpm大体相同.但是有一个问题需要注意,使用systemctl启动起来的master被kill以后，worker也会死掉.
+
 
 正常启动nginx,kill掉master
 
