@@ -1,5 +1,15 @@
 <?php
 
+$a =1;
+$b = 3;
+$c = 6;
+
+$d = compact('a','b','c');
+
+var_dump($d);
+
+
+
 //$pattern = '/http\:\/\/www\.baidu\.com\/module\/(\w+)\/(\w+)(?<=\?)(\S+)/';
 //$str     = "http://www.baidu.com/module/controller/action?name=su&type=1";
 //$matchResult = [];
