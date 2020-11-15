@@ -16,4 +16,4 @@ docker各个容器是共享操作系统内核的,而VM的完全模拟一套操�
 	srw-rw-rw-   1 root           root              0 Nov 15 21:59 rpcbind.sock
 
 
-todo
+todo  docker 的架构图. docker 的原理
