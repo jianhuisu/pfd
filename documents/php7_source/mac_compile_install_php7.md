@@ -4,7 +4,6 @@ centos下编译 与mac下编译遇到问题时，解决方式不一样.
 
     ./configure --prefix=/usr/local/php  \
     --with-config-file-path=/usr/local/php \
-    --with-libdir=/usr/lib \
     --with-curl \
     --without-iconv \
     --with-pdo-mysql \
