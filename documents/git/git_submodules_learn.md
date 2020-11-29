@@ -1,6 +1,5 @@
 ## git submodule 
 
-
     app
     vhall-core  [一个sub modules]
     

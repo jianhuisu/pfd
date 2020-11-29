@@ -37,7 +37,8 @@
     --enable-sockets 
     --enable-sysvsem 
     --enable-sysvshm 
-    --enable-xml --enable-zip
+    --enable-xml 
+    --enable-zip
 
 #### 配置 
 
