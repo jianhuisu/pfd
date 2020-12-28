@@ -42,3 +42,15 @@
     $a=array("Animal" => "horse", "Type" => "mammal");
     print_r(array_map("myfunction",$a));
     ?>
+    
+    
+array_map 与 array_walk 稍有区别. array_walk在回调时可以接收 key.
+
+      <?php
+          function myfunction($value,$key)
+          {
+          echo "The key $key has the value $value<br>";
+          }
+          $a=array("a"=>"red","b"=>"green","c"=>"blue");
+          array_walk($a,"myfunction");
+      ?> 
