@@ -1,12 +1,11 @@
 # mac 下如何开启mysql查询日志
 
 laravel框架里面记录的sql日志参数是占位符+绑定参数 格式的. 自行替换之后发现where条件中一些int参数被当做字符串条件使用
-
-    常规sql ：      where uid=1
-    laravel sql ： where uid='1' 
-
+    
+    "sql":"select * from `questions` where (`id` = '1' and `webinar_id` = '2') and `questions`.`deleted_at` is null limit 1","time":"17.13 ms"
+     
 隐式类型转换会有额外的性能开销,但是之前一直没有人反馈过这个问题,我也拿不准.不太适合直接问别人.自己监测一下发送到mysql服务端执行的sql到底长什么样.
-所以打一个常规查询的日志.    
+所以需要在服务端打一个常规查询的日志.    
 
 ## mysql日志
 
@@ -128,6 +127,35 @@ mysql是使用brew安装的.
     sujianhui        45594   0.1  4.7  4862060 393960   ??  S     2:22PM   0:01.70 /usr/local/opt/mysql/bin/mysqld --basedir=/usr/local/opt/mysql --datadir=/usr/local/var/mysql --plugin-dir=/usr/local/opt/mysql/lib/plugin --log-error=/usr/local/var/log/mysql/error.log --pid-file=bogon.pid
     sujianhui        45596   0.0  0.0  4267932    344 s001  R+    2:22PM   0:00.00 grep --color=auto mysql
     sujianhui        45460   0.0  0.0  4279776   1232   ??  S     2:22PM   0:00.03 /bin/sh /usr/local/opt/mysql/bin/mysqld_safe --datadir=/usr/local/var/mysql
+    
+万事俱备,监测结果如下
+
+    2021-01-02T08:08:05.874391Z	   19 Connect	guangsu@localhost on vhall using TCP/IP
+    2021-01-02T08:08:05.882107Z	   19 Query	use `vhall`
+    2021-01-02T08:08:05.882671Z	   19 Prepare	set names 'utf8mb4' collate 'utf8mb4_unicode_ci'
+    2021-01-02T08:08:05.882712Z	   19 Execute	set names 'utf8mb4' collate 'utf8mb4_unicode_ci'
+    2021-01-02T08:08:05.882853Z	   19 Close stmt	
+    2021-01-02T08:08:05.883120Z	   19 Prepare	set session sql_mode='NO_ENGINE_SUBSTITUTION'
+    2021-01-02T08:08:05.883225Z	   19 Execute	set session sql_mode='NO_ENGINE_SUBSTITUTION'
+    2021-01-02T08:08:05.883360Z	   19 Close stmt	
+    2021-01-02T08:08:05.883703Z	   19 Prepare	select * from `questions` where (`id` = ? and `webinar_id` = ?) and `questions`.`deleted_at` is null limit 1
+    2021-01-02T08:08:05.885490Z	   19 Execute	select * from `questions` where (`id` = 1 and `webinar_id` = 2) and `questions`.`deleted_at` is null limit 1
+    2021-01-02T08:08:05.889910Z	   19 Close stmt	
+    2021-01-02T08:08:05.890873Z	   19 Quit	
+    
+可以观察到,真正被执行的sql中,int类型值并未像laravel log 中一样被设置为 `id` = '1'` 引发隐式类型转换.可以把心放到肚子里了.
+
+走到这里时候,我才忽然间想到我一个同事的神仙操作,可以快速的打印sql服务端`Execute 的sql`.
+
+    字段正确：QuestionModel::getInstance()->where(['id' => 1,'webinar_id' => 2])->first();
+    故意标注一个错误字段获取 execute sql ： QuestionModel::getInstance()->where(['id' => 1,'webinar_id3' => 2])->first();
+    
+捕获到的异常信息中包含的就是 `Execute sql`
+
+    系统异常：SQLSTATE[42S22]: Column not found: 1054 Unknown column 'webinar_id3' in 'where clause' 
+    (SQL: select * from `questions` where (`id` = 1 and `webinar_id3` = 2) and `questions`.`deleted_at` is null limit 1)[42S22]
+    
+三人行必有我师.
 
 ## 总结
 
