@@ -51,6 +51,26 @@ xdebug 生成性能分析文件,qcachegrind格式化该文件,提供良好的可
  - invocation 调用
  - invoke 调用,援引 
 
+## xdebug 配置实例
+
+
+    [xdebug]
+    
+    zend_extension=/usr/lib/php/extensions/no-debug-non-zts-20160303/xdebug.so
+    xdebug.remote_enable=on
+    xdebug.idekey='PHPSTORM'
+    xdebug.remote_host=127.0.0.1
+    xdebug.remote_port=9001
+    
+    ; 性能分析部分
+    xdebug.profiler_enable=Off
+    ; 开启性能分析触发模式 而不是对于每一个请求都触发性能分析 与 xdebug.profiler_enable=0 时配合使用:w
+    xdebug.profiler_enable_trigger=On
+    ; url中包含XDEBUG_PROFILE参数对时才会触发性能分析 eg. http://local.web.vhall.com/index.php?XDEBUG_PROFILE=aaa
+    xdebug.profiler_enable_trigger_value='aaa'
+    xdebug.profiler_output_dir="/Users/sujianhui/PhpstormProjects/profiler_output"
+    xdebug.profiler_output_name=callgrind.out.%u
+
 ## 参考资料
 
 qcachegrind安装指南 https://blog.csdn.net/weixin_33881753/article/details/88923382
