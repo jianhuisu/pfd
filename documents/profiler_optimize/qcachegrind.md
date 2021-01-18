@@ -25,10 +25,6 @@ xdebug 生成性能分析文件,qcachegrind格式化该文件,提供良好的可
     brew install graphviz
     brew install qcachegrind
 
-安装qcachegrind
-
-（3）以上两步安装好后打开qcachegrind工具，发现Call Graph功能无法使用，[How to install qcachegrind (kcachegrind) on Mac OSX Snow Leopard][4] 此文章可以解决
-
 ## MacOS: qcachegrind 安装
 
  1. `brew install graphviz`  执行此命令安装graphviz，用来Call Graph功能  
