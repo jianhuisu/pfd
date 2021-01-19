@@ -1,4 +1,4 @@
-# pgk_config
+# pkg_config
 
 大家应该都知道用第三方库，就少不了要使用到第三方的头文件和库文件。
 我们在编译、链接的时候，必须要指定这些头文件和库文件的位置。
@@ -10,7 +10,7 @@
 首先要明确一点，因为`pkg-config`也只是一个命令，它是通过读取配置文件来了解这些文件位置的,而不是像一个服务一样动态的监测,统计这些数据.
 所以不是你安装了一个第三方的库，`pkg-config`就能知道第三方库的头文件和库文件所在的位置。
 
-`pkg-config`命令是通过查询`XXX.pc`文件而知道这些的。所以按照标准规范，第三方库都要提供一个或者多个属于自己的库的`.pc`文件。
+`pkg-config`命令是通过扫描包中的`XXX.pc`文件而知道这些的。所以按照标准规范，第三方库都要提供一个或者多个属于自己的库的`.pc`文件。
 接下来我们看它单独使用效果. 先找一个`openssl`库看一下.
 
     [sujianhui@ lib]$>pwd
@@ -55,9 +55,9 @@
     -I/usr/local/Cellar/openssl/1.0.2s/include
     
 但`pkg-config`又是如何找到所需的`.pc`文件呢？这就需要用到一个环境变量`PKG_CONFIG_PATH`来自己定制.
-一般在编译时，处于临时场景的需要,我们需要临时指定该路径. `export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH"`.
+一般在编译时，出于临时场景的需要,我们需要临时指定该路径. `export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH"`.
 相当于追加一个需要扫描的目录.默认情况下在系统目录寻找`/usr/lib64/pkgconfig`.(或者`/usr/lib/pkgconfig`)
-这环境变量(这个环境变量一般为空)写明`.pc`文件的路径，`pkg-config`命令会读取这个环境变量的内容，这样就知道`pc`文件了。 
+这环境变量(这个环境变量一般为空)写明`.pc`文件的路径，`pkg-config`命令会读取这个环境变量的内容，这样就locate到`pc`文件了。 
 
     [sujianhui@ bin]$>echo $PKG_CONFIG_PATH
     
