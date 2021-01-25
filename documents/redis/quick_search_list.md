@@ -4,3 +4,4 @@
  - Type key  查看key的类型
  - Llen key 查看List的长度
  - Client list 查看维持的客户端连接
+ - ttl 查看当前key剩余的存活时间 
