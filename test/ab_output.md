@@ -36,10 +36,10 @@ output.
     Failed requests:        0     失败请求计数
     Total transferred:      473000 bytes
     HTML transferred:       105000 bytes
-    Requests per second:    105.30 [#/sec] (mean)  相当于 我们常说的QPS/ 每秒事务数
-    Time per request:       94.962 [ms] (mean)     平均请求响应时间 可以理解为一个socket链接的的占用时间,因为一个并发用户会占用一个socket链接,多个链接在这个链接上复用上，后面括号中的 mean 表示这是一个平均值  `concurrency * timetaken * 1000 / done`
-    Time per request:       9.496 [ms] (mean, across all concurrent requests)  每个请求实际运行时间的平均值  `timetaken * 1000 / done`
-    Transfer rate:          48.64 [Kbytes/sec] received  平均每秒网络上的流量，可以帮助排除是否存在网络流量过大导致响应时间延长的问题
+    Requests per second:    105.30 [#/sec] (mean)  并发为1时 相当于 我们常说的QPS/ 每秒事务数  //吞吐率，大家最关心的指标之一，相当于 LR 中的每秒事务数，后面括号中的 mean 表示这是一个平均值
+    Time per request:       94.962 [ms] (mean)     平均请求响应时间 可以理解为一个socket链接的的占用时间,因为一个并发用户会占用一个socket链接,多个链接在这个链接上复用上，后面括号中的 mean 表示这是一个平均值  `concurrency * timetaken * 1000 / done`  用户平均请求等待时间，大家最关心的指标之二，相当于 LR 中的平均事务响应时间，后面括号中的 mean 表示这是一个平均值 
+    Time per request:       9.496 [ms] (mean, across all concurrent requests)  每个请求实际运行时间的平均值  `timetaken * 1000 / done`  //服务器平均请求处理时间，大家最关心的指标之三
+    Transfer rate:          48.64 [Kbytes/sec] received  平均每秒网络上的流量，可以帮助排除是否存在网络流量过大导致响应时间延长的问题 //平均每秒网络上的流量，可以帮助排除是否存在网络流量过大导致响应时间延长的问题
     
     Connection Times (ms)
                   min  mean[+/-sd] median   max
