@@ -2,6 +2,7 @@
 .idea/
 # ignore all files in this project which name is all.txt
 all.txt
+cache/
 
 # don't ignore file belong this project which name is .gitkeep , .gitkeep file general used to commit one empty dir to git repository
 !.gitkeep*
